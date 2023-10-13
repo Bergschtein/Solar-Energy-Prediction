@@ -15,15 +15,14 @@ class DataImporter(object):
        
         X_train_observed = pd.read_parquet(data_dir.joinpath(f'{dataset_name}/train_targets.parquet'))
         
-        print(X_train_observed)
-
+         
 class DataSet:
     def __init__(self,
                  dataset_importer: DataImporter,
                  kind: str,
                  **kwargs):
         """
-        kind: observer, estimated, train
+        kind: observerd, estimated, train
         """
 
         pass
