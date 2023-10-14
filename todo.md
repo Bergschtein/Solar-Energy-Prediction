@@ -10,7 +10,9 @@
 
 EDA
 - [x] Plot train target for a, b and c
+- [] Test with stupid few features. 
 - [] Plot target and features on same x - scale 
+    - Investigate deadspots in target.
 - [x] check correlation between: 
     - 'pressure_50m:hPa', 'pressure_100m:hPa', 'sfc_pressure:hPa'  = 1
     - 'snow_water:kgm2', 'snow_depth:cm'
