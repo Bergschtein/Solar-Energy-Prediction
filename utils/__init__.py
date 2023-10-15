@@ -92,3 +92,10 @@ def from_3d_to_matrix(arr: np.ndarray, col_names: pd.Index):
     df.columns = col_names
 
     return df
+
+def add_time_lag_df(df, n_lags=24, horizon=12):
+    df_ds = []
+    for col in df:
+        col_df = time_delay_embedding(df[col], n_lags=n_lags, horizon=horizon)
+        df_ds.append(col_df)
+    return pd.concat(df_ds, axis=1)
