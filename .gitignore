@@ -7,7 +7,7 @@ __pycache__/
 *.so
 
 catboost_info
-models/
+models
 
 # Distribution / packaging
 .Python
