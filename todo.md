@@ -69,3 +69,246 @@ test = y['b'].set_index('time').drop(pd.date_range('2020-07-12','2020-08-26'))
 '2023-02-01':'2023-02-07'
 '2023-02-23':'2023-02-26'
 '2023-03-05':'2023-03-17'
+
+
+Models:
+
+
+cb_4:
+selected_features = ['date_forecast', 'absolute_humidity_2m:gm3',
+       'air_density_2m:kgm3', 'clear_sky_energy_1h:J',
+       'clear_sky_rad:W',
+       'dew_point_2m:K', 'diffuse_rad:W', 'diffuse_rad_1h:J', 'direct_rad:W',
+       'direct_rad_1h:J', 'effective_cloud_cover:p', 'elevation:m',
+       'is_day:idx', 'msl_pressure:hPa', 'precip_5min:mm',
+       'pressure_100m:hPa', 'pressure_50m:hPa',
+       'prob_rime:p', 'rain_water:kgm2', 'relative_humidity_1000hPa:p',
+       'sfc_pressure:hPa',
+       'sun_azimuth:d', 'sun_elevation:d', 'super_cooled_liquid_water:kgm2',
+       't_1000hPa:K', 'total_cloud_cover:p', 'visibility:m',
+       'wind_speed_10m:ms', 'wind_speed_u_10m:ms', 'wind_speed_v_10m:ms',
+       'wind_speed_w_1000hPa:ms']
+
+made_features = ['location', 'is_day:idx']
+
+data_collection.select_features(selected_features)
+data_collection.resample_to_hourly()
+data_collection.remove_nans(drop_feature)
+data_collection.fix_cat_features(location=True)
+data_collection.drop_bad_data()
+data_collection.combine_obs_est()
+
+model = cb.CatBoostRegressor(
+    iterations = 10000,
+    depth = 9,
+    learning_rate =0.005,
+    loss_function ='MAE',
+    cat_features = made_features
+)
+y_scale = True
+normalize = False
+model_name = "cb_4"
+k_b = 4.976
+k_c = 5.735
+
+Kaggle score: 150.8232
+
+cb_5:
+selected_features = ['date_forecast', 'absolute_humidity_2m:gm3',
+       'air_density_2m:kgm3', 'clear_sky_energy_1h:J',
+       'clear_sky_rad:W',
+       'dew_point_2m:K', 'diffuse_rad:W', 'diffuse_rad_1h:J', 'direct_rad:W',
+       'direct_rad_1h:J', 'effective_cloud_cover:p', 'elevation:m',
+       'is_day:idx', 'msl_pressure:hPa', 'precip_5min:mm',
+       'pressure_100m:hPa', 'pressure_50m:hPa',
+       'prob_rime:p', 'rain_water:kgm2', 'relative_humidity_1000hPa:p',
+       'sfc_pressure:hPa',
+       'sun_azimuth:d', 'sun_elevation:d', 'super_cooled_liquid_water:kgm2',
+       't_1000hPa:K', 'total_cloud_cover:p', 'visibility:m',
+       'wind_speed_10m:ms', 'wind_speed_u_10m:ms', 'wind_speed_v_10m:ms',
+       'wind_speed_w_1000hPa:ms']
+
+made_features = ['location', 'is_day:idx']
+
+data_collection.select_features(selected_features)
+data_collection.resample_to_hourly()
+data_collection.remove_nans(drop_feature)
+data_collection.fix_cat_features(location=True)
+
+data_collection.combine_obs_est()
+
+model = cb.CatBoostRegressor(
+    iterations = 10000,
+    depth = 9,
+    learning_rate =0.005,
+    loss_function ='MAE',
+    cat_features = made_features
+)
+y_scale = True
+normalize = False
+model_name = "cb_5"
+k_b = 4.976
+k_c = 5.735
+
+Kaggle score: 151.98259
+
+cb_6:
+selected_features = ['date_forecast', 'absolute_humidity_2m:gm3',
+       'air_density_2m:kgm3', 'clear_sky_energy_1h:J',
+       'clear_sky_rad:W',
+       'dew_point_2m:K', 'diffuse_rad:W', 'diffuse_rad_1h:J', 'direct_rad:W',
+       'direct_rad_1h:J', 'effective_cloud_cover:p', 'elevation:m',
+       'is_day:idx', 'msl_pressure:hPa', 'precip_5min:mm',
+       'pressure_100m:hPa', 'pressure_50m:hPa',
+       'prob_rime:p', 'rain_water:kgm2', 'relative_humidity_1000hPa:p',
+       'sfc_pressure:hPa',
+       'sun_azimuth:d', 'sun_elevation:d', 'super_cooled_liquid_water:kgm2',
+       't_1000hPa:K', 'total_cloud_cover:p', 'visibility:m',
+       'wind_speed_10m:ms', 'wind_speed_u_10m:ms', 'wind_speed_v_10m:ms',
+       'wind_speed_w_1000hPa:ms']
+
+made_features = ['location', 'is_day:idx']
+
+data_collection.select_features(selected_features)
+data_collection.resample_to_hourly()
+data_collection.remove_nans(drop_feature)
+data_collection.fix_cat_features(location=True)
+data_collection.drop_bad_data()
+data_collection.combine_obs_est()
+
+model = cb.CatBoostRegressor(
+    iterations = 10000,
+    depth = 9,
+    learning_rate =0.005,
+    loss_function ='MAE',
+    cat_features = made_features
+)
+y_scale = True
+normalize = False
+model_name = "cb_6"
+k_b = 5
+k_c = 6
+
+Kaggle score: 150.04465
+
+
+cb_7:
+selected_features = ['date_forecast', 'absolute_humidity_2m:gm3',
+       'air_density_2m:kgm3', 'clear_sky_energy_1h:J',
+       'clear_sky_rad:W',
+       'dew_point_2m:K', 'diffuse_rad:W', 'diffuse_rad_1h:J', 'direct_rad:W',
+       'direct_rad_1h:J', 'effective_cloud_cover:p', 'elevation:m',
+       'is_day:idx', 'msl_pressure:hPa', 'precip_5min:mm',
+       'pressure_100m:hPa', 'pressure_50m:hPa',
+       'prob_rime:p', 'rain_water:kgm2', 'relative_humidity_1000hPa:p',
+       'sfc_pressure:hPa',
+       'sun_azimuth:d', 'sun_elevation:d', 'super_cooled_liquid_water:kgm2',
+       't_1000hPa:K', 'total_cloud_cover:p', 'visibility:m',
+       'wind_speed_10m:ms', 'wind_speed_u_10m:ms', 'wind_speed_v_10m:ms',
+       'wind_speed_w_1000hPa:ms']
+
+made_features = ['location', 'is_day:idx']
+
+data_collection.select_features(selected_features)
+data_collection.resample_to_hourly()
+data_collection.remove_nans(drop_feature)
+data_collection.fix_cat_features(location=True)
+data_collection.drop_bad_data()
+data_collection.combine_obs_est()
+
+model = cb.CatBoostRegressor(
+    iterations = 10000,
+    depth = 9,
+    learning_rate =0.01,
+    loss_function ='MAE',
+    cat_features = made_features
+)
+y_scale = True
+normalize = False
+model_name = "cb_7"
+k_b = 5
+k_c = 6
+
+Kaggle score: 150.11526
+
+cb_8:
+selected_features = ['date_forecast', 'absolute_humidity_2m:gm3',
+       'air_density_2m:kgm3', 'clear_sky_energy_1h:J',
+       'clear_sky_rad:W',
+       'dew_point_2m:K', 'diffuse_rad:W', 'diffuse_rad_1h:J', 'direct_rad:W',
+       'direct_rad_1h:J', 'effective_cloud_cover:p', 'elevation:m',
+       'is_day:idx', 'msl_pressure:hPa', 'precip_5min:mm',
+       'pressure_100m:hPa', 'pressure_50m:hPa',
+       'prob_rime:p', 'rain_water:kgm2', 'relative_humidity_1000hPa:p',
+       'sfc_pressure:hPa',
+       'sun_azimuth:d', 'sun_elevation:d', 'super_cooled_liquid_water:kgm2',
+       't_1000hPa:K', 'total_cloud_cover:p', 'visibility:m',
+       'wind_speed_10m:ms', 'wind_speed_u_10m:ms', 'wind_speed_v_10m:ms',
+       'wind_speed_w_1000hPa:ms']
+
+made_features = ['location', 'is_day:idx']
+
+data_collection.select_features(selected_features)
+data_collection.resample_to_hourly()
+data_collection.remove_nans(drop_feature)
+data_collection.fix_cat_features(location=True)
+data_collection.drop_bad_data()
+data_collection.combine_obs_est()
+
+model = cb.CatBoostRegressor(
+    iterations = 10000,
+    depth = 9,
+    learning_rate =0.005,
+    loss_function ='MAE',
+    cat_features = made_features
+)
+y_scale = True
+normalize = False
+model_name = "cb_8"
+k_b = 5.5
+k_c = 6.5
+
+Kaggle score:  151.81335
+
+
+cb_9:
+selected_features = ['date_forecast', 'absolute_humidity_2m:gm3',
+       'air_density_2m:kgm3', 'clear_sky_energy_1h:J',
+       'clear_sky_rad:W', 'dew_or_rime:idx',
+       'dew_point_2m:K', 'diffuse_rad:W', 'diffuse_rad_1h:J', 'direct_rad:W',
+       'direct_rad_1h:J', 'effective_cloud_cover:p', 'elevation:m',
+       'fresh_snow_12h:cm', 'fresh_snow_1h:cm', 'fresh_snow_24h:cm',
+       'fresh_snow_3h:cm', 'fresh_snow_6h:cm', 'is_day:idx',
+       'is_in_shadow:idx', 'msl_pressure:hPa', 'precip_5min:mm',
+       'precip_type_5min:idx', 'pressure_100m:hPa', 'pressure_50m:hPa',
+       'prob_rime:p', 'rain_water:kgm2', 'relative_humidity_1000hPa:p',
+       'sfc_pressure:hPa', 'snow_depth:cm',
+       'snow_drift:idx', 'snow_melt_10min:mm', 'snow_water:kgm2',
+       'sun_azimuth:d', 'sun_elevation:d', 'super_cooled_liquid_water:kgm2',
+       't_1000hPa:K', 'total_cloud_cover:p', 'visibility:m',
+       'wind_speed_10m:ms', 'wind_speed_u_10m:ms', 'wind_speed_v_10m:ms',
+       'wind_speed_w_1000hPa:ms']
+
+made_features = ['location', 'is_day:idx', 'is_in_shadow:idx']
+
+data_collection.select_features(selected_features)
+data_collection.resample_to_hourly()
+data_collection.remove_nans(drop_feature)
+data_collection.fix_cat_features(location=True)
+data_collection.drop_bad_data()
+data_collection.combine_obs_est()
+
+model = cb.CatBoostRegressor(
+    iterations = 10000,
+    depth = 9,
+    learning_rate =0.005,
+    loss_function ='MAE',
+    cat_features = made_features
+)
+y_scale = True
+normalize = False
+model_name = "cb_9"
+k_b = 5
+k_c = 6
+
+Kaggle score: 150.85928

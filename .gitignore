@@ -8,7 +8,9 @@ __pycache__/
 
 catboost_info
 models
-
+AutogluonModels
+Delivered_preds
+autoG_3h.ipynb
 # Distribution / packaging
 .Python
 build/
