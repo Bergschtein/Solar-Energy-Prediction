@@ -312,3 +312,287 @@ k_b = 5
 k_c = 6
 
 Kaggle score: 150.85928
+
+
+cb_10:
+
+selected_features = ['date_forecast', 'absolute_humidity_2m:gm3',
+       'air_density_2m:kgm3', 'clear_sky_energy_1h:J',
+       'clear_sky_rad:W', 'dew_or_rime:idx',
+       'dew_point_2m:K', 'diffuse_rad:W', 'diffuse_rad_1h:J', 'direct_rad:W',
+       'direct_rad_1h:J', 'effective_cloud_cover:p', 'elevation:m',
+       'fresh_snow_12h:cm', 'fresh_snow_1h:cm', 'fresh_snow_24h:cm',
+       'fresh_snow_3h:cm', 'fresh_snow_6h:cm', 'is_day:idx',
+       'is_in_shadow:idx', 'msl_pressure:hPa', 'precip_5min:mm',
+       'precip_type_5min:idx', 'pressure_100m:hPa', 'pressure_50m:hPa',
+       'prob_rime:p', 'rain_water:kgm2', 'relative_humidity_1000hPa:p',
+       'sfc_pressure:hPa', 'snow_depth:cm',
+       'snow_drift:idx', 'snow_melt_10min:mm', 'snow_water:kgm2',
+       'sun_azimuth:d', 'sun_elevation:d', 'super_cooled_liquid_water:kgm2',
+       't_1000hPa:K', 'total_cloud_cover:p', 'visibility:m',
+       'wind_speed_10m:ms', 'wind_speed_u_10m:ms', 'wind_speed_v_10m:ms',
+       'wind_speed_w_1000hPa:ms']
+
+made_features = ['location', 'type', 'is_day:idx', 'is_in_shadow:idx']
+
+drop_feature = 'diffuse_rad:W'
+
+data_collection.select_features(selected_features)
+data_collection.resample_to_hourly()
+data_collection.remove_nans(drop_feature)
+data_collection.add_location()
+data_collection.add_type()
+
+data_collection.combine_obs_est()
+data_collection.drop_bad_data() # The new version!
+data_collection.cyclic_time_encoding()
+
+y_scale = True
+k_b = 5
+k_c = 6
+
+model = cb.CatBoostRegressor(
+    iterations = 10000,
+    depth = 9,
+    learning_rate =0.005,
+    loss_function ='MAE',
+    cat_features = made_features
+)
+
+Kaggle score: 145.07299
+
+
+AutoGluon_1:
+
+selected_features = ['date_forecast', 'absolute_humidity_2m:gm3',
+       'air_density_2m:kgm3', 'clear_sky_energy_1h:J',
+       'clear_sky_rad:W', 'dew_or_rime:idx',
+       'dew_point_2m:K', 'diffuse_rad:W', 'diffuse_rad_1h:J', 'direct_rad:W',
+       'direct_rad_1h:J', 'effective_cloud_cover:p', 'elevation:m',
+       'fresh_snow_12h:cm', 'fresh_snow_1h:cm', 'fresh_snow_24h:cm',
+       'fresh_snow_3h:cm', 'fresh_snow_6h:cm', 'is_day:idx',
+       'is_in_shadow:idx', 'msl_pressure:hPa', 'precip_5min:mm',
+       'precip_type_5min:idx', 'pressure_100m:hPa', 'pressure_50m:hPa',
+       'prob_rime:p', 'rain_water:kgm2', 'relative_humidity_1000hPa:p',
+       'sfc_pressure:hPa', 'snow_depth:cm',
+       'snow_drift:idx', 'snow_melt_10min:mm', 'snow_water:kgm2',
+       'sun_azimuth:d', 'sun_elevation:d', 'super_cooled_liquid_water:kgm2',
+       't_1000hPa:K', 'total_cloud_cover:p', 'visibility:m',
+       'wind_speed_10m:ms', 'wind_speed_u_10m:ms', 'wind_speed_v_10m:ms',
+       'wind_speed_w_1000hPa:ms']
+
+
+made_features = ['location', 'type', 'is_day:idx', 'is_in_shadow:idx']
+
+drop_feature = 'diffuse_rad:W'
+
+data_collection = DataSet()
+data_collection.select_features(selected_features)
+data_collection.resample_to_hourly()
+data_collection.remove_nans(drop_feature)
+# data_collection.drop_bad_data()
+data_collection.add_location()
+data_collection.add_type()
+#
+data_collection.combine_obs_est()
+data_collection.cyclic_time_encoding()
+
+drop_cols = ['location', 'time']
+constant_y_indices = get_constant_indices(y)
+
+y = y.drop(constant_y_indices, errors='ignore')
+X = X.drop(constant_y_indices, errors='ignore')
+
+seed = 246
+
+50% of est (type = 0) data used for tuning model.
+
+label = 'pv_measurement'
+predictor_a = TabularPredictor(label=label, eval_metric='mae').fit(
+    train_data = data['a'][0], 
+    time_limit = 60*60,
+    presets='best_quality',
+    num_bag_folds=8,
+    num_stack_levels=0,
+    tuning_data = data['a'][1],
+    use_bag_holdout=True
+)
+
+predictor_b = TabularPredictor(label=label, eval_metric='mae').fit(
+    train_data = data['b'][0], 
+    time_limit = 60*60,
+    presets='best_quality',
+    num_bag_folds=8,
+    num_stack_levels=0,
+    tuning_data = data['b'][1],
+    use_bag_holdout=True
+)
+
+predictor_c = TabularPredictor(label=label, eval_metric='mae').fit(
+    train_data = data['c'][0], 
+    time_limit = 60*60,
+    presets='best_quality',
+    num_bag_folds=8,
+    num_stack_levels=0,
+    tuning_data = data['c'][1],
+    use_bag_holdout=True
+)
+predictor_a.refit_full()
+predictor_b.refit_full()
+predictor_c.refit_full()
+
+Kaggle score: 146.70194
+
+ensamble_cb10_glu1:
+
+ 0.5 * (AutoGluon1 + cb_10)
+
+ Kaggle score: 142.60805
+
+
+ cb_11:
+
+ selected_features = ['date_forecast', 'absolute_humidity_2m:gm3',
+       'air_density_2m:kgm3', 'clear_sky_energy_1h:J',
+       'clear_sky_rad:W', 'dew_or_rime:idx',
+       'dew_point_2m:K', 'diffuse_rad:W', 'diffuse_rad_1h:J', 'direct_rad:W',
+       'direct_rad_1h:J', 'effective_cloud_cover:p', 'elevation:m',
+       'fresh_snow_6h:cm', 'is_day:idx',
+       'is_in_shadow:idx', 'msl_pressure:hPa', 'precip_5min:mm',
+       'pressure_100m:hPa', 'pressure_50m:hPa',
+       'prob_rime:p', 'rain_water:kgm2', 'relative_humidity_1000hPa:p',
+       'sfc_pressure:hPa', 'snow_depth:cm',
+       'sun_azimuth:d', 'sun_elevation:d', 'super_cooled_liquid_water:kgm2',
+       't_1000hPa:K', 'total_cloud_cover:p', 'visibility:m',
+       'wind_speed_10m:ms', 'wind_speed_u_10m:ms', 'wind_speed_v_10m:ms',
+       'wind_speed_w_1000hPa:ms']
+
+made_features = ['location', 'type', 'is_day:idx', 'is_in_shadow:idx', 'dew_or_rime:idx']
+
+drop_feature = 'diffuse_rad:W'
+
+data_collection.select_features(selected_features)
+data_collection.resample_to_hourly()
+data_collection.remove_nans(drop_feature)
+data_collection.add_location()
+data_collection.add_type()
+#
+data_collection.combine_obs_est()
+data_collection.drop_bad_data()
+data_collection.cyclic_time_encoding()
+
+k_b = 5
+k_c = 6
+
+model = cb.CatBoostRegressor(
+    iterations = 10000,
+    depth = 9,
+    learning_rate =0.005,
+    loss_function ='MAE',
+    cat_features = made_features
+)
+
+Kaggle score: 143.70617
+
+ensamble_cb11_glu1:
+
+0.5 * (AutoGluon1 + cb_11)
+
+Kaggle score: 141.82572
+
+
+cb_12:
+
+selected_features = ['date_forecast', 'absolute_humidity_2m:gm3',
+       'air_density_2m:kgm3', 'clear_sky_energy_1h:J',
+       'clear_sky_rad:W', 'dew_or_rime:idx',
+       'dew_point_2m:K', 'diffuse_rad:W', 'direct_rad:W',
+       'effective_cloud_cover:p', 'elevation:m',
+       'fresh_snow_6h:cm', 'is_day:idx',
+       'is_in_shadow:idx', 'msl_pressure:hPa', 'precip_5min:mm',
+       'pressure_100m:hPa', 'pressure_50m:hPa',
+       'prob_rime:p', 'rain_water:kgm2', 'relative_humidity_1000hPa:p',
+       'sfc_pressure:hPa', 'snow_depth:cm',
+       'sun_azimuth:d', 'sun_elevation:d', 'super_cooled_liquid_water:kgm2',
+       't_1000hPa:K', 'total_cloud_cover:p', 'visibility:m',
+       'wind_speed_10m:ms', 'wind_speed_u_10m:ms', 'wind_speed_v_10m:ms',
+       'wind_speed_w_1000hPa:ms']
+
+made_features = ['location', 'is_day:idx', 'is_in_shadow:idx', 'dew_or_rime:idx']
+
+drop_feature = 'diffuse_rad:W'
+
+data_collection.select_features(selected_features)
+data_collection.resample_to_hourly()
+data_collection.remove_nans(drop_feature)
+data_collection.add_location()
+# data_collection.add_type()
+#
+data_collection.combine_obs_est()
+data_collection.drop_bad_data()
+data_collection.cyclic_time_encoding()
+
+k_b = 5
+k_c = 6
+
+model = cb.CatBoostRegressor(
+    iterations = 11000,
+    depth = 9,
+    learning_rate =0.005,
+    loss_function ='MAE',
+    cat_features = made_features
+)
+
+Kaggle score: 150.058187
+
+
+autoG_1_cb_10_11:
+
+1/3 *(cb_10 + cb_11 + autoG_1)
+
+Kaggle score: 150.058187
+
+
+cb_13:
+
+selected_features = ['date_forecast', 'absolute_humidity_2m:gm3',
+       'air_density_2m:kgm3', 'clear_sky_energy_1h:J',
+       'clear_sky_rad:W', 'dew_or_rime:idx',
+       'dew_point_2m:K', 'diffuse_rad:W', 'diffuse_rad_1h:J', 'direct_rad:W',
+       'direct_rad_1h:J', 'effective_cloud_cover:p', 'elevation:m',
+       'fresh_snow_6h:cm', 'is_day:idx',
+       'is_in_shadow:idx', 'msl_pressure:hPa', 'precip_5min:mm',
+       'pressure_100m:hPa', 'pressure_50m:hPa',
+       'prob_rime:p', 'rain_water:kgm2', 'relative_humidity_1000hPa:p',
+       'sfc_pressure:hPa', 'snow_depth:cm',
+       'sun_azimuth:d', 'sun_elevation:d', 'super_cooled_liquid_water:kgm2',
+       't_1000hPa:K', 'total_cloud_cover:p', 'visibility:m',
+       'wind_speed_10m:ms', 'wind_speed_u_10m:ms', 'wind_speed_v_10m:ms',
+       'wind_speed_w_1000hPa:ms']
+
+made_features = ['location', 'is_day:idx', 'is_in_shadow:idx', 'dew_or_rime:idx']
+
+drop_feature = 'diffuse_rad:W'
+
+data_collection.select_features(selected_features)
+data_collection.resample_to_hourly()
+data_collection.remove_nans(drop_feature)
+data_collection.add_location()
+data_collection.add_type()
+data_collection.combine_obs_est()
+data_collection.drop_bad_data()
+data_collection.cyclic_time_encoding()
+
+y_scale = True
+k_b = 5
+k_c = 6
+
+model = cb.CatBoostRegressor(
+    iterations = 11000,
+    depth = 9,
+    learning_rate =0.005,
+    loss_function ='MAE',
+    cat_features = made_features
+)
+
+Kaggle Score: 143.716884

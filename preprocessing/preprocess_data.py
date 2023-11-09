@@ -2,23 +2,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
-
-# import os
-
-# class DataImporter(object):
-#     """
-#     Imports dataset
-#     """
-#     def __init__(self, dataset_name: str, data_scaling: bool = False, **kwargs):
-#         data_dir = get_root_dir().joinpath('data')
-
-#         train = pd.read_parquet(data_dir.joinpath(f'{dataset_name}/train_targets.parquet'))
-       
-#         X_test_estimated = pd.read_parquet(data_dir.joinpath(f'{dataset_name}/X_test_estimated.parquet'))
-       
-#         X_train_observed = pd.read_parquet(data_dir.joinpath(f'{dataset_name}/train_targets.parquet'))
-        
-         
+  
 class DataSet:
     def __init__(self):
         """
@@ -69,6 +53,7 @@ class DataSet:
         self.X_test_estimated = X_test_estimated
         self.Y_train = Y_train
 
+
     def resample_to_hourly(self):
         for loc in ['a','b','c']:
             self.X_train_observed[loc] = to_hourly(self.X_train_observed[loc])
@@ -116,21 +101,6 @@ class DataSet:
             loc_vec_X_te = [loc] * len(self.X_test_estimated[loc])
             self.X_test_estimated[loc]['location'] = loc_vec_X_te
 
-    def fix_cat_features(self, categorical_list = [], location = False, type = False):
-        """
-        Makes all categorical features actually categorical.
-        Adds location or type of you want.
-        """
-        for loc in ['a','b','c']:
-            if type:
-
-                add_type(self.X_train_observed[loc], 'obs')
-                add_type(self.X_train_estimated[loc], 'est')
-                add_type(self.X_test_estimated[loc], 'est')
-
-            make_categorical(self.X_train_observed[loc],categorical_list)
-            make_categorical(self.X_train_estimated[loc],categorical_list)
-            make_categorical(self.X_test_estimated[loc],categorical_list)
 
     def remove_nans(self, feature):
         for loc in ['a','b','c']:
@@ -216,10 +186,10 @@ class DataSet:
         y_c = self.Y_train['c']
 
         y_train = pd.concat([y_a, y_b, y_c])
-        y_train = y_train.reset_index(drop=True, inplace=True)
+        y_train = y_train.reset_index(drop=True)
 
         X_train = pd.concat([X_a, X_b, X_c])
-        X_train = X_train.reset_index(drop=True, inplace=True)
+        # X_train = X_train.reset_index(drop=True, inplace=True)
         X_test = pd.concat([self.X_test_estimated['a'], self.X_test_estimated['b'],self.X_test_estimated['c']])
         
         return X_train, X_test, y_train
@@ -227,47 +197,14 @@ class DataSet:
     def scale_y_train(self, k_b = 5, k_c = 6):
 
         self.Y_train['b'] = self.Y_train['b'] * k_b 
-        self.Y_train['c'] = self.Y_train['c']* k_c
+        self.Y_train['c'] = self.Y_train['c'] * k_c
 
     def drop_bad_data(self):
         for loc in ['a', 'b', 'c']:
-            # y_loc = self.Y_train['loc']
             y_ind = get_constant_indices(self.Y_train[loc])
             self.Y_train[loc].drop(y_ind, errors='ignore')
             self.X_train[loc].drop(y_ind, errors='ignore')
-        # date_ranges_b = [
-        #     ('2020-04-02','2020-04-15'),
-        #     ('2020-07-13','2020-08-25'),
-        #     ('2021-02-18','2021-04-18'),
-        #     ('2021-04-29','2021-05-01'),
-        #     ('2021-08-26','2021-09-03'),
-        #     ('2021-09-08','2021-09-14'),
-        #     ('2021-09-19','2021-09-27'),
-        #     ('2022-03-20','2022-04-04')
-        # ]
-        
-        # temp = self.Y_train['b'].set_index('time')
-        # for range in date_ranges_b:
-        #     temp = temp.drop(pd.date_range(range[0],range[1]), errors='ignore')
-        # temp = temp.reset_index(drop=False)
-        # self.Y_train['b'] = temp
 
-
-        # date_ranges_c = [
-        #             ('2020-02-06','2020-02-09'),
-        #             ('2020-02-24','2020-03-07'),
-        #             ('2023-02-01','2023-02-07'),
-        #             ('2023-02-23','2023-02-26'),
-        #             ('2023-03-05','2023-03-17')
-        #         ]
-
-        # temp = self.Y_train['c'].set_index('time')
-        # for range in date_ranges_c:
-        #     temp = temp.drop(pd.date_range(range[0],range[1]), errors='ignore')
-        # temp = temp.reset_index(drop=False)
-        # self.Y_train['c'] = temp
-
-#Helper functions
 
     def cyclic_time_encoding(self):
         for loc in ['a', 'b', 'c']:
@@ -284,6 +221,8 @@ class DataSet:
 
                     self.X_test_estimated[loc]['cos_hour'] = np.cos(2*np.pi*self.X_test_estimated[loc][time_feature].dt.hour/24)
                     self.X_test_estimated[loc]['cos_month'] = np.cos(2*np.pi*self.X_test_estimated[loc][time_feature].dt.month/12)
+
+#Helper functions
 
 def match_X_Y(X,Y):
     """ 
