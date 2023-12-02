@@ -2,7 +2,7 @@
 
 Repo for the Kaggle competition in the course TDT4173 - Machine Learning at NTNU. 
 
-Erlend and I ended up with the top performing model.
+Erlend and I ended up with the top performing model out of a total of 167 teams.
 
 https://www.kaggle.com/competitions/solar-energy-production-forecasting/leaderboard
 
